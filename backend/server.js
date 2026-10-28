@@ -127,6 +127,10 @@ app.post('/add-student', async (req, res) => {
         }
 
         const students = await loadStudents();
+        if (students.some((student) => String(student.id).toLowerCase() === String(id).trim().toLowerCase())) {
+            return res.status(409).send({ error: 'A student with this ID already exists' });
+        }
+
         const newStudent = { name, id, phone, zip };
         students.push(newStudent);
         await saveStudents(students);
