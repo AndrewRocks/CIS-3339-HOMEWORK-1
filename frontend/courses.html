@@ -3,11 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courses</title>
+    <title>Course Management</title>
+    <script src="courses.js" defer></script>
 </head>
 <body>
     <nav>
         <a href="index.html">Students</a> | <a href="courses.html">Courses</a>
     </nav>
+    <main>
+        <h1>Course Management</h1>
+        <form id="courseForm">
+            <label for="courseId">Course ID:</label>
+            <input id="courseId" name="courseId" type="text" required>
+            <label for="courseName">Course name:</label>
+            <input id="courseName" name="courseName" type="text" required>
+            <button type="submit">Add course</button>
+        </form>
+        <p id="status" role="status" aria-live="polite"></p>
+        <h2>Courses</h2>
+        <p id="emptyMessage" hidden>No courses have been added yet.</p>
+        <ul id="courseList" aria-label="Course list"></ul>
+    </main>
 </body>
 </html>

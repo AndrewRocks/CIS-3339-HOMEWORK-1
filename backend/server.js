@@ -8,6 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 const DATA_FILE = path.join(__dirname, 'students.json');
+const COURSES_FILE = path.join(__dirname, 'courses.json');
 
 async function loadStudents() {
     try {
@@ -30,6 +31,71 @@ async function saveStudents(students) {
         throw error;
     }
 }
+
+async function loadCourses() {
+    try {
+        const data = await fs.promises.readFile(COURSES_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return [];
+        }
+        throw error;
+    }
+}
+
+async function saveCourses(courses) {
+    await fs.promises.writeFile(COURSES_FILE, JSON.stringify(courses, null, 2), 'utf8');
+}
+
+app.get('/courses', async (req, res) => {
+    try {
+        res.send(await loadCourses());
+    } catch (error) {
+        console.error('Error loading courses:', error);
+        res.status(500).send({ error: 'Unable to load courses' });
+    }
+});
+
+app.post('/courses', async (req, res) => {
+    try {
+        const id = typeof req.body.id === 'string' ? req.body.id.trim() : '';
+        const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+        if (!id || !name) {
+            return res.status(400).send({ error: 'Course ID and course name are required' });
+        }
+
+        const courses = await loadCourses();
+        if (courses.some((course) => course.id.toLowerCase() === id.toLowerCase())) {
+            return res.status(409).send({ error: 'A course with this ID already exists' });
+        }
+
+        const course = { id, name };
+        courses.push(course);
+        await saveCourses(courses);
+        res.status(201).send({ message: 'Course added successfully', course });
+    } catch (error) {
+        console.error('Error adding course:', error);
+        res.status(500).send({ error: 'Unable to add course' });
+    }
+});
+
+app.delete('/courses/:id', async (req, res) => {
+    try {
+        const courses = await loadCourses();
+        const index = courses.findIndex((course) => course.id === req.params.id);
+        if (index === -1) {
+            return res.status(404).send({ error: 'Course not found' });
+        }
+
+        const [course] = courses.splice(index, 1);
+        await saveCourses(courses);
+        res.send({ message: 'Course deleted successfully', course });
+    } catch (error) {
+        console.error('Error deleting course:', error);
+        res.status(500).send({ error: 'Unable to delete course' });
+    }
+});
 
 // Endpoint to search for a student by name
 app.post('/find-student', async (req, res) => {
