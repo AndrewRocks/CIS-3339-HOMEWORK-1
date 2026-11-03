@@ -54,9 +54,11 @@ export const useEnrollmentsStore = defineStore('enrollments', () => {
         method: 'POST',
         body: JSON.stringify({ studentId, courseId })
       });
-      message.value = 'Student enrolled successfully.';
       if (selectedCourseId.value === courseId) {
         await loadRoster(courseId);
+      }
+      if (!error.value) {
+        message.value = 'Student enrolled successfully.';
       }
       return true;
     } catch (requestError) {

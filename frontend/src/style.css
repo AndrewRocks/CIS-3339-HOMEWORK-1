@@ -7,7 +7,7 @@
   font-optical-sizing: auto;
   font-weight: 400;
   --ink: #17233c;
-  --muted: #748099;
+  --muted: #596579;
   --line: #e7ebf2;
   --blue: #4263eb;
   --blue-dark: #3451cf;
@@ -16,8 +16,10 @@
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; min-height: 100vh; }
 button, input { font: inherit; }
-button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #aebeff; outline-offset: 2px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #aebeff; outline-offset: 2px; }
 .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+.skip-link { position: absolute; z-index: 1; top: 8px; left: 8px; padding: 10px 14px; border-radius: 8px; background: var(--ink); color: #fff; transform: translateY(-160%); }
+.skip-link:focus { transform: translateY(0); }
 .site-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px max(24px, calc((100% - 1120px) / 2)); background: #fff; border-bottom: 1px solid var(--line); }
 .brand { display: flex; gap: 10px; align-items: center; color: var(--ink); font-size: 17px; font-weight: 800; text-decoration: none; }
 .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; background: var(--blue); color: #fff; }
@@ -28,7 +30,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .page-heading { margin-bottom: 28px; }
 .page-heading h1 { margin: 5px 0 9px; font-size: clamp(30px, 5vw, 40px); font-weight: 800; line-height: 1.2; letter-spacing: -1.5px; }
 .page-heading > p:last-child { margin: 0; color: var(--muted); font-size: 16px; }
-.eyebrow { margin: 0 0 7px; color: #7181ad; font-size: 11px; font-weight: 700; letter-spacing: 1.15px; }
+.eyebrow { margin: 0 0 7px; color: #52658c; font-size: 11px; font-weight: 700; letter-spacing: 1.15px; }
 .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: start; }
 .card { min-width: 0; padding: 26px; border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: 0 5px 20px rgb(34 53 89 / 4%); }
 .card-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
@@ -38,7 +40,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .form-stack { display: flex; flex-direction: column; gap: 10px; }
 .form-stack label { margin-top: 5px; color: #3d4960; font-size: 13px; font-weight: 600; }
 .form-stack input, .form-stack select, .roster-select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #dfe4ed; border-radius: 9px; background: #fff; color: var(--ink); }
-.form-stack input::placeholder { color: #a4adbd; }
+.form-stack input::placeholder { color: #68758a; }
 .form-stack input:focus, .form-stack select:focus, .roster-select:focus { border-color: #8398ff; outline: 3px solid #eef1ff; }
 .roster-label { display: block; margin-bottom: 8px; color: #3d4960; font-size: 13px; font-weight: 600; }
 .roster-select { margin-bottom: 8px; }
@@ -69,7 +71,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .course-info { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 3px; }
 .course-info strong { font-size: 13px; }
 .course-info span { overflow-wrap: anywhere; color: var(--muted); font-size: 12px; }
-.site-footer { padding: 18px 20px; border-top: 1px solid var(--line); color: #8a94a8; font-size: 12px; text-align: center; }
+.site-footer { padding: 18px 20px; border-top: 1px solid var(--line); color: #596579; font-size: 12px; text-align: center; }
 
 @media (max-width: 720px) {
   .site-header { padding: 14px 20px; }
@@ -84,4 +86,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .page-container { width: min(100% - 28px, 1120px); }
   .card { padding: 20px; }
   .form-row { grid-template-columns: 1fr; gap: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }

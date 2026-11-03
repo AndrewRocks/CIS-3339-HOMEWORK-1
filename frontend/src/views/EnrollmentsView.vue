@@ -46,7 +46,7 @@ async function submitEnrollment() {
         <span class="heading-icon" aria-hidden="true">＋</span>
       </div>
       <p v-if="store.loading && !canEnroll" class="muted" role="status">Loading students and courses…</p>
-      <p v-else-if="!canEnroll" class="muted empty-copy">
+      <p v-else-if="!canEnroll && !store.error" class="muted empty-copy">
         Add at least one student and one course before creating an enrollment.
       </p>
       <form v-else class="form-stack" @submit.prevent="submitEnrollment">
@@ -84,7 +84,7 @@ async function submitEnrollment() {
       </select>
       <p v-if="store.loading && selectedCourseId" class="muted" role="status">Loading course roster…</p>
       <p v-else-if="!selectedCourseId" class="muted empty-copy">Select a course to see enrolled students.</p>
-      <p v-else-if="store.roster.length === 0" class="muted empty-copy">
+      <p v-else-if="!store.error && store.roster.length === 0" class="muted empty-copy">
         No students are enrolled in {{ selectedCourse?.id }} yet.
       </p>
       <ul v-else class="course-list" aria-label="Students enrolled in selected course">

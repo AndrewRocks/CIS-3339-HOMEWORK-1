@@ -4,8 +4,9 @@ import AppNavigation from './components/AppNavigation.vue';
 
 <template>
   <div class="app-shell">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <AppNavigation />
-    <main class="page-container">
+    <main id="main-content" class="page-container">
       <RouterView />
     </main>
     <footer class="site-footer">Student and course records</footer>

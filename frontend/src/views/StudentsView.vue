@@ -74,7 +74,7 @@ async function deleteStudent() {
         <button class="button button-danger button-small" type="button" :disabled="students.loading"
           @click="deleteStudent">Delete student</button>
       </div>
-      <p v-else class="muted empty-copy">Search results will appear here.</p>
+      <p v-else-if="!students.error" class="muted empty-copy">Search results will appear here.</p>
     </section>
 
     <section class="card">

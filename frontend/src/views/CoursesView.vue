@@ -59,7 +59,7 @@ async function deleteCourse(course) {
         <span class="count-badge">{{ store.courses.length }}</span>
       </div>
       <p v-if="store.loading && store.courses.length === 0" class="muted" role="status">Loading courses…</p>
-      <p v-else-if="store.courses.length === 0" class="muted empty-copy">No courses yet. Add one to get started.</p>
+      <p v-else-if="!store.error && store.courses.length === 0" class="muted empty-copy">No courses yet. Add one to get started.</p>
       <ul v-else class="course-list">
         <li v-for="course in store.courses" :key="course.id" class="course-item">
           <div class="course-mark" aria-hidden="true">C</div>
