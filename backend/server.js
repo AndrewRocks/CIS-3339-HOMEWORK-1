@@ -8,8 +8,17 @@ const { Student, Course, Enrollment } = require('./models');
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
+const frontendDist = path.resolve(__dirname, '..', 'frontend', 'dist');
+const frontendRoutes = new Set(['/courses', '/enrollments']);
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+    if (req.path === '/api' || req.path.startsWith('/api/')) {
+        req.isApiRequest = true;
+        req.url = req.url.replace(/^\/api(?=\/|$)/, '') || '/';
+    }
+    next();
+});
 
 function normalizeId(value) {
     return value.trim().toLocaleLowerCase('en-US');
@@ -20,6 +29,23 @@ function publicRecord(document) {
     delete record.idKey;
     return record;
 }
+
+app.use((req, res, next) => {
+    const acceptsHtml = (req.get('accept') || '').includes('text/html');
+    if (
+        req.method === 'GET' &&
+        !req.isApiRequest &&
+        acceptsHtml &&
+        frontendRoutes.has(req.path)
+    ) {
+        return res.sendFile(path.join(frontendDist, 'index.html'), (error) => {
+            if (error) {
+                next(error);
+            }
+        });
+    }
+    next();
+});
 
 app.get('/students', async (req, res) => {
     const students = await Student.find().sort({ name: 1 });
@@ -152,6 +178,21 @@ app.delete('/students/:id', async (req, res) => {
     await Enrollment.deleteMany({ studentId: student._id });
     await student.deleteOne();
     res.send({ message: 'Student deleted successfully', student: publicRecord(student) });
+});
+
+app.use(express.static(frontendDist));
+app.use((req, res, next) => {
+    if (req.isApiRequest) {
+        return res.status(404).send({ error: 'API endpoint not found' });
+    }
+    if (req.method === 'GET' && req.accepts('html')) {
+        return res.sendFile(path.join(frontendDist, 'index.html'), (error) => {
+            if (error) {
+                next(error);
+            }
+        });
+    }
+    next();
 });
 
 app.use((error, req, res, next) => {
