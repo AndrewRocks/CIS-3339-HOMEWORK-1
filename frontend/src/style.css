@@ -37,9 +37,11 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .count-badge { font-size: 14px; font-weight: 700; }
 .form-stack { display: flex; flex-direction: column; gap: 10px; }
 .form-stack label { margin-top: 5px; color: #3d4960; font-size: 13px; font-weight: 600; }
-.form-stack input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #dfe4ed; border-radius: 9px; background: #fff; color: var(--ink); }
+.form-stack input, .form-stack select, .roster-select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #dfe4ed; border-radius: 9px; background: #fff; color: var(--ink); }
 .form-stack input::placeholder { color: #a4adbd; }
-.form-stack input:focus { border-color: #8398ff; outline: 3px solid #eef1ff; }
+.form-stack input:focus, .form-stack select:focus, .roster-select:focus { border-color: #8398ff; outline: 3px solid #eef1ff; }
+.roster-label { display: block; margin-bottom: 8px; color: #3d4960; font-size: 13px; font-weight: 600; }
+.roster-select { margin-bottom: 8px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .button { display: inline-flex; min-height: 42px; justify-content: center; align-items: center; padding: 0 16px; border: 0; border-radius: 9px; cursor: pointer; font-weight: 700; transition: background .15s, transform .15s; }
 .button:disabled { cursor: wait; opacity: .65; }

@@ -9,6 +9,7 @@ app.use(express.json());
 
 const DATA_FILE = path.join(__dirname, 'students.json');
 const COURSES_FILE = path.join(__dirname, 'courses.json');
+const ENROLLMENTS_FILE = path.join(__dirname, 'enrollments.json');
 
 async function loadStudents() {
     try {
@@ -48,6 +49,31 @@ async function saveCourses(courses) {
     await fs.promises.writeFile(COURSES_FILE, JSON.stringify(courses, null, 2), 'utf8');
 }
 
+async function loadEnrollments() {
+    try {
+        const data = await fs.promises.readFile(ENROLLMENTS_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return [];
+        }
+        throw error;
+    }
+}
+
+async function saveEnrollments(enrollments) {
+    await fs.promises.writeFile(ENROLLMENTS_FILE, JSON.stringify(enrollments, null, 2), 'utf8');
+}
+
+app.get('/students', async (req, res) => {
+    try {
+        res.send(await loadStudents());
+    } catch (error) {
+        console.error('Error loading students:', error);
+        res.status(500).send({ error: 'Unable to load students' });
+    }
+});
+
 app.get('/courses', async (req, res) => {
     try {
         res.send(await loadCourses());
@@ -80,6 +106,75 @@ app.post('/courses', async (req, res) => {
     }
 });
 
+app.get('/enrollments', async (req, res) => {
+    const courseId = typeof req.query.courseId === 'string' ? req.query.courseId.trim() : '';
+    if (!courseId) {
+        return res.status(400).send({ error: 'Course ID is required to list its enrolled students' });
+    }
+
+    try {
+        const [courses, students, enrollments] = await Promise.all([
+            loadCourses(),
+            loadStudents(),
+            loadEnrollments()
+        ]);
+        const course = courses.find((item) => item.id === courseId);
+        if (!course) {
+            return res.status(404).send({ error: 'Course not found' });
+        }
+
+        const studentIds = new Set(
+            enrollments
+                .filter((enrollment) => enrollment.courseId === courseId)
+                .map((enrollment) => String(enrollment.studentId))
+        );
+        res.send(students.filter((student) => studentIds.has(String(student.id))));
+    } catch (error) {
+        console.error('Error loading course roster:', error);
+        res.status(500).send({ error: 'Unable to load course roster' });
+    }
+});
+
+app.post('/enrollments', async (req, res) => {
+    const studentId = typeof req.body.studentId === 'string' ? req.body.studentId.trim() : '';
+    const courseId = typeof req.body.courseId === 'string' ? req.body.courseId.trim() : '';
+    if (!studentId || !courseId) {
+        return res.status(400).send({ error: 'Student and course are required' });
+    }
+
+    try {
+        const [students, courses, enrollments] = await Promise.all([
+            loadStudents(),
+            loadCourses(),
+            loadEnrollments()
+        ]);
+        const student = students.find((item) => String(item.id) === studentId);
+        if (!student) {
+            return res.status(404).send({ error: 'Student not found' });
+        }
+
+        const course = courses.find((item) => item.id === courseId);
+        if (!course) {
+            return res.status(404).send({ error: 'Course not found' });
+        }
+
+        const duplicate = enrollments.some((enrollment) =>
+            String(enrollment.studentId) === studentId && enrollment.courseId === courseId
+        );
+        if (duplicate) {
+            return res.status(409).send({ error: 'This student is already enrolled in this course' });
+        }
+
+        const enrollment = { studentId, courseId };
+        enrollments.push(enrollment);
+        await saveEnrollments(enrollments);
+        res.status(201).send({ message: 'Student enrolled successfully', enrollment, student, course });
+    } catch (error) {
+        console.error('Error creating enrollment:', error);
+        res.status(500).send({ error: 'Unable to create enrollment' });
+    }
+});
+
 app.delete('/courses/:id', async (req, res) => {
     try {
         const courses = await loadCourses();
@@ -89,6 +184,8 @@ app.delete('/courses/:id', async (req, res) => {
         }
 
         const [course] = courses.splice(index, 1);
+        const enrollments = await loadEnrollments();
+        await saveEnrollments(enrollments.filter((enrollment) => enrollment.courseId !== course.id));
         await saveCourses(courses);
         res.send({ message: 'Course deleted successfully', course });
     } catch (error) {
@@ -160,6 +257,10 @@ app.delete('/students/:id', async (req, res) => {
         }
 
         const [deletedStudent] = students.splice(index, 1);
+        const enrollments = await loadEnrollments();
+        await saveEnrollments(enrollments.filter((enrollment) =>
+            String(enrollment.studentId) !== String(deletedStudent.id)
+        ));
         await saveStudents(students);
         res.send({ message: 'Student deleted successfully', student: deletedStudent });
     } catch (error) {

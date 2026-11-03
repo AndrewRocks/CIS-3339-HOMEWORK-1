@@ -11,6 +11,7 @@ import { RouterLink } from 'vue-router';
     <nav class="navigation" aria-label="Main navigation">
       <RouterLink to="/">Students</RouterLink>
       <RouterLink to="/courses">Courses</RouterLink>
+      <RouterLink to="/enrollments">Enrollments</RouterLink>
     </nav>
   </header>
 </template>
