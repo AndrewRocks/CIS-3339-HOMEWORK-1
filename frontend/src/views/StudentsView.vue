@@ -35,7 +35,7 @@ async function deleteStudent() {
   if (!students.student || !window.confirm(`Delete student ${students.student.name}?`)) {
     return;
   }
-  await students.remove(students.student.name);
+  await students.remove(students.student);
 }
 </script>
 

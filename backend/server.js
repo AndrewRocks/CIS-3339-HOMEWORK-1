@@ -100,7 +100,7 @@ app.delete('/courses/:id', async (req, res) => {
 // Endpoint to search for a student by name
 app.post('/find-student', async (req, res) => {
     try {
-        const { name } = req.body;
+        const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
         if (!name) {
             return res.status(400).send({ error: 'Student name is required' });
         }
@@ -121,13 +121,21 @@ app.post('/find-student', async (req, res) => {
 // Endpoint to save a student
 app.post('/add-student', async (req, res) => {
     try {
-        const { name, id, phone, zip } = req.body;
+        const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+        const rawId = req.body.id;
+        const id = typeof rawId === 'string' || typeof rawId === 'number'
+            ? String(rawId).trim()
+            : '';
+        const phone = typeof req.body.phone === 'string' ? req.body.phone.trim() : '';
+        const zip = typeof req.body.zip === 'string' ? req.body.zip.trim() : '';
         if (!name || !id || !phone || !zip) {
             return res.status(400).send({ error: 'All fields (name, id, phone, zip) are required' });
         }
 
         const students = await loadStudents();
-        if (students.some((student) => String(student.id).toLowerCase() === String(id).trim().toLowerCase())) {
+        if (students.some((student) =>
+            String(student.id).trim().toLowerCase() === id.toLowerCase()
+        )) {
             return res.status(409).send({ error: 'A student with this ID already exists' });
         }
 
@@ -142,10 +150,28 @@ app.post('/add-student', async (req, res) => {
     }
 });
 
+app.delete('/students/:id', async (req, res) => {
+    try {
+        const id = req.params.id.trim();
+        const students = await loadStudents();
+        const index = students.findIndex((student) => String(student.id).trim() === id);
+        if (index === -1) {
+            return res.status(404).send({ error: 'Student not found' });
+        }
+
+        const [deletedStudent] = students.splice(index, 1);
+        await saveStudents(students);
+        res.send({ message: 'Student deleted successfully', student: deletedStudent });
+    } catch (error) {
+        console.error('Error deleting student:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
+
 // Endpoint to delete a student by name
 app.post('/delete-student', async (req, res) => {
     try {
-        const { name } = req.body;
+        const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
         if (!name) {
             return res.status(400).send({ error: 'Student name is required' });
         }

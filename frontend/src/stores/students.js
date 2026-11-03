@@ -44,16 +44,15 @@ export const useStudentsStore = defineStore('students', () => {
     }
   }
 
-  async function remove(name) {
+  async function remove(selectedStudent) {
     loading.value = true;
     error.value = '';
     message.value = '';
     try {
-      await apiRequest('/delete-student', {
-        method: 'POST',
-        body: JSON.stringify({ name })
+      await apiRequest(`/students/${encodeURIComponent(selectedStudent.id)}`, {
+        method: 'DELETE'
       });
-      if (student.value?.name === name) {
+      if (String(student.value?.id) === String(selectedStudent.id)) {
         student.value = null;
       }
       message.value = 'Student deleted successfully.';
