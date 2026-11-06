@@ -27,6 +27,14 @@ async function submitEnrollment() {
 
   await store.enroll(selectedStudentId.value, selectedCourseId.value);
 }
+
+async function removeEnrollment(student) {
+  const course = selectedCourse.value;
+  if (!course || !window.confirm(`Remove ${student.name} from ${course.id}?`)) {
+    return;
+  }
+  await store.removeEnrollment(student.id, course.id);
+}
 </script>
 
 <template>
@@ -87,13 +95,22 @@ async function submitEnrollment() {
       <p v-else-if="!store.error && store.roster.length === 0" class="muted empty-copy">
         No students are enrolled in {{ selectedCourse?.id }} yet.
       </p>
-      <ul v-else class="course-list" aria-label="Students enrolled in selected course">
+      <ul v-else-if="!store.error" class="course-list" aria-label="Students enrolled in selected course">
         <li v-for="student in store.roster" :key="student.id" class="course-item">
           <div class="course-mark" aria-hidden="true">S</div>
           <div class="course-info">
             <strong>{{ student.name }}</strong>
             <span>Student ID: {{ student.id }} · {{ student.phone }}</span>
           </div>
+          <button
+            class="button button-danger button-small"
+            type="button"
+            :disabled="store.loading"
+            :aria-label="`Remove ${student.name} from ${selectedCourse?.id}`"
+            @click="removeEnrollment(student)"
+          >
+            Remove
+          </button>
         </li>
       </ul>
     </section>

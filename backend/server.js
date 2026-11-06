@@ -119,6 +119,38 @@ app.post('/enrollments', async (req, res) => {
     });
 });
 
+app.delete('/enrollments', async (req, res) => {
+    const studentId = typeof req.body?.studentId === 'string' ? req.body.studentId.trim() : '';
+    const courseId = typeof req.body?.courseId === 'string' ? req.body.courseId.trim() : '';
+    if (!studentId || !courseId) {
+        return res.status(400).send({ error: 'Student and course are required' });
+    }
+
+    const [student, course] = await Promise.all([
+        Student.findOne({ id: studentId }),
+        Course.findOne({ id: courseId })
+    ]);
+    if (!student) {
+        return res.status(404).send({ error: 'Student not found' });
+    }
+    if (!course) {
+        return res.status(404).send({ error: 'Course not found' });
+    }
+
+    const result = await Enrollment.deleteOne({
+        studentId: student._id,
+        courseId: course._id
+    });
+    if (result.deletedCount === 0) {
+        return res.status(404).send({ error: 'Enrollment not found' });
+    }
+
+    res.send({
+        message: 'Student removed from course successfully',
+        enrollment: { studentId: student.id, courseId: course.id }
+    });
+});
+
 app.delete('/courses/:id', async (req, res) => {
     const course = await Course.findOne({ id: req.params.id });
     if (!course) {

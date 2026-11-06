@@ -69,6 +69,28 @@ export const useEnrollmentsStore = defineStore('enrollments', () => {
     }
   }
 
+  async function removeEnrollment(studentId, courseId) {
+    loading.value = true;
+    error.value = '';
+    message.value = '';
+    try {
+      await apiRequest('/enrollments', {
+        method: 'DELETE',
+        body: JSON.stringify({ studentId, courseId })
+      });
+      if (selectedCourseId.value === courseId) {
+        roster.value = roster.value.filter((student) => String(student.id) !== String(studentId));
+      }
+      message.value = 'Student removed from course successfully.';
+      return true;
+    } catch (requestError) {
+      error.value = requestError.message;
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     students,
     courses,
@@ -79,6 +101,7 @@ export const useEnrollmentsStore = defineStore('enrollments', () => {
     selectedCourseId,
     loadOptions,
     loadRoster,
-    enroll
+    enroll,
+    removeEnrollment
   };
 });
