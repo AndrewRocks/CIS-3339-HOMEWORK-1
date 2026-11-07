@@ -280,6 +280,27 @@ Your own README must clearly state:
 - the server start command; and
 - the exact `localhost` URL used to open the application.
 
+### Install and Run the Completed Application on Windows
+
+Required software: Node.js with npm, Git, and MongoDB Community Edition. From the repository root, install the locked dependencies, build the Vue production assets, and start the application:
+
+```powershell
+npm ci
+npm run build
+npm start
+```
+
+The backend reads `MONGODB_URI` from the repository-root `.env` file. The committed local setting is `mongodb://127.0.0.1:27017/cis3339_homework1`; no credentials or other environment variables are required. The server uses port `3000` unless `PORT` is set.
+
+Start and verify the MongoDB Windows service in PowerShell (run PowerShell as Administrator if needed):
+
+```powershell
+Start-Service MongoDB
+Get-Service MongoDB
+```
+
+Wait for `npm start` to report that it connected to MongoDB, then open **http://localhost:3000** in a browser. Express serves the built Vue application there, including its routed pages. Stop the application with `Ctrl+C`.
+
 ---
 
 ## Troubleshooting
