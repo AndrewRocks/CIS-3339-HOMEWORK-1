@@ -234,24 +234,24 @@ Vue Router navigation must work when users move between views, and refreshing a 
 
 Your repository must include:
 
-- [ ] A Vue 3 frontend implemented entirely with the Composition API
-- [ ] Vue Router navigation between the application's main views
-- [ ] Pinia stores for shared state used across components or views
-- [ ] Reusable Vue components for the required functionality
-- [ ] A responsive, accessible, and consistently styled user interface
-- [ ] Student add, search, display, and delete features
-- [ ] Course add, list, and delete features
-- [ ] Enrollment add and course-roster features
-- [ ] An Express REST API supporting all required frontend operations
-- [ ] MongoDB models/collections for students, courses, and enrollments
-- [ ] Automatic operation with an empty or nonexistent local MongoDB database, with no manual database preparation
-- [ ] Validation, duplicate prevention, and cascading enrollment deletion
-- [ ] Environment-based MongoDB configuration
-- [ ] The real `.env` file, configured for local MongoDB, committed to Git
-- [ ] A working `npm run build` command
-- [ ] A production server that serves the built application on `localhost`
-- [ ] Updated setup, build, and run instructions
-- [ ] Graceful error handling and no unexpected console errors
+- [x] A Vue 3 frontend implemented entirely with the Composition API
+- [x] Vue Router navigation between the application's main views
+- [x] Pinia stores for shared state used across components or views
+- [x] Reusable Vue components for the required functionality
+- [x] A responsive, accessible, and consistently styled user interface
+- [x] Student add, search, display, and delete features
+- [x] Course add, list, and delete features
+- [x] Enrollment add and course-roster features
+- [x] An Express REST API supporting all required frontend operations
+- [x] MongoDB models/collections for students, courses, and enrollments
+- [x] Automatic operation with an empty or nonexistent local MongoDB database, with no manual database preparation
+- [x] Validation, duplicate prevention, and cascading enrollment deletion
+- [x] Environment-based MongoDB configuration
+- [x] The real `.env` file, configured for local MongoDB, committed to Git
+- [x] A working `npm run build` command
+- [x] A production server that serves the built application on `localhost`
+- [x] Updated setup, build, and run instructions
+- [x] Graceful error handling and no unexpected console errors
 
 Do not submit:
 
